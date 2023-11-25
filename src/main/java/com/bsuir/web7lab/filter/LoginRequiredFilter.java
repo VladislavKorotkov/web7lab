@@ -8,6 +8,8 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
@@ -16,16 +18,26 @@ public class LoginRequiredFilter implements Filter {
     public void destroy() {
     }
 
-    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException, IOException {
-        HttpServletRequest request = (HttpServletRequest) req;
-        if ("admin".equals(request.getSession().getAttribute("name"))) {
-            chain.doFilter(req, resp);
-        } else {
-            request.getSession().invalidate();
-            request.getRequestDispatcher("LoginServlet").forward(req, resp);
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
+
+        HttpServletRequest httpReq = (HttpServletRequest) request;
+        HttpServletResponse httpResp = (HttpServletResponse) response;
+        HttpSession session = httpReq.getSession();
+        if (session.getAttribute("name")!=null) {
+            chain.doFilter(request, response);
         }
+        else {
+
+// httpResp.sendRedirect(httpReq.getContextPath() + "/LoginServlet");
+            session.invalidate();
+            request.getRequestDispatcher("LoginServlet").forward(request,
+                    response);
+        }
+
     }
 
-    public void init(FilterConfig config) throws ServletException {
+
+    public void init (FilterConfig config) throws ServletException {
     }
 }
