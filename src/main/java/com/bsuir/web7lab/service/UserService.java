@@ -35,4 +35,5 @@ public class UserService {
             throw new ServiceException(exception.getMessage(), exception);
         }
     }
+
 }
